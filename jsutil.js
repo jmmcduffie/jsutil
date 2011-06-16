@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Import the UTIL package into the JMM object
  */
 var JMM = JMM || {};

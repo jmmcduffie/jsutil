@@ -1,4 +1,4 @@
-JavaScript UTIL Library
+ÔªøJavaScript UTIL Library
 =======================
 
 A library of common, highly reusable JavaScript utility functions.
@@ -11,24 +11,23 @@ Usage
 By default, data type extensions are applied automatically. So you can call `"test".count('t')`, for instance, right out of the box.
 If you wish to change this behavior simply comment out (or delete) the last section of the code.
 
-Otherwise, all functions live nested in the `UTIL` object under the `JMM` object for the time being--this is a holdover from my legacy code which will eventually go away.
+Beyond that, all functions live nested in the `UTIL` object under the `JMM` object for the time being&mdash;this is a holdover from my legacy code which will eventually go away.
 You can, of course, alias the functions to whatever name you would like (e.g. `formatDate = JMM.UTIL.dateFormat;`).
 
 Unit Tests
 ----------
 
-Using [JasmineBDD](http://pivotal.github.com/jasmine/) I have built fairly thorough unit tests for this library. All tests can be found under the `spec/` directory.
+Using [JasmineBDD](http://pivotal.github.com/jasmine/) I have built unit tests for this library. All tests can be found under the `spec/` directory.
 
 i18n
 ----
 
 Localization can be accomplished for `dateFormat` by setting the names as a hash on the function object. To implement Spanish, for example:
 
-	// Internationalization strings
 	JMM.UTIL.dateFormat.i18n = {
 		dayNames: [
-			"dom", "lun", "mar", "niÈ", "jue", "vie", "s·b",
-			"domingo", "lunes", "martes", "miÈrcoles", "jueves", "viernes", "s·bado"
+			"dom", "lun", "mar", "mi√©", "jue", "vie", "s√°b",
+			"domingo", "lunes", "martes", "mi√©rcoles", "jueves", "viernes", "s√°bado"
 		],
 		monthNames: [
 			"enero", "feb", "marzo", "abr", "mayo", "jun", "jul", "agosto", "set", "oct", "nov", "dic",

@@ -1,4 +1,4 @@
-describe('String.pad', function() {
+﻿describe('String.pad', function() {
 	
 	beforeEach(function() {
 		old_string = 'test';
