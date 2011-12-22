@@ -85,48 +85,48 @@ describe('String.count', function() {
 	var test = 'abcdefg1234567,abcdefg,0000000';
 	
 	it('counts the occurences of a single character spread out in a larger string', function() {
-		var count = LAMPO.UTIL.stringCount(test, 'a');
+		var count = JSUTIL.stringCount(test, 'a');
 		expect(count).toEqual(2);
 	});
 	
 	it('counts the occurrences of a single character grouped together in a larger string', function() {
-		var count = LAMPO.UTIL.stringCount(test, '0');
+		var count = JSUTIL.stringCount(test, '0');
 		expect(count).toEqual(7);
 	});
 	
 	it('counts the occurrences of a phrase in a larger string', function () {
-		var count = LAMPO.UTIL.stringCount(test, '00');
+		var count = JSUTIL.stringCount(test, '00');
 		expect(count).toEqual(3);
 	});
 	
 	it('returns 0 when the character(s) is not found in the string', function() {
-		var count = LAMPO.UTIL.stringCount(test, 'x');
+		var count = JSUTIL.stringCount(test, 'x');
 		expect(count).toEqual(0);
 	});
 	
 	it('is case sensitive', function() {
-		var count = LAMPO.UTIL.stringCount(test, 'A');
+		var count = JSUTIL.stringCount(test, 'A');
 		expect(count).toEqual(0);
 	});
 	
 	it('ignores RegExp special character meanings', function() {
-		var count = LAMPO.UTIL.stringCount(test, '.');
+		var count = JSUTIL.stringCount(test, '.');
 		expect(count).toEqual(0);
 	});
 	
 	it('correctly counts characters with special meanings in a RegExp', function() {
-		var count = LAMPO.UTIL.stringCount(test, ',');
+		var count = JSUTIL.stringCount(test, ',');
 		expect(count).toEqual(2);
 	});
 	
 	it('converts numbers into strings', function() {
-		var count = LAMPO.UTIL.stringCount(test, 0);
+		var count = JSUTIL.stringCount(test, 0);
 		expect(count).toEqual(7);
 	});
 	
 	it('thows a SyntaxError when no parameters are passed in', function() {
 		expect(function() {
-			LAMPO.UTIL.stringCount();
+			JSUTIL.stringCount();
 		}).toThrow('Required parameters are missing');
 	});
 	
@@ -149,65 +149,65 @@ describe('String.count', function() {
 describe('String.toDate', function() {
 	
 	it('handles strings formatted like yyyy/m/d', function() {
-		var date = '2011/4/1', result = LAMPO.UTIL.strToDate(date);
+		var date = '2011/4/1', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 		expect(result.getDate()).toBe(1);
 	});
 	
 	it('handles strings formatted like yyyy.mm.dd', function() {
-		var date = '2011.04.01', result = LAMPO.UTIL.strToDate(date);
+		var date = '2011.04.01', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 		expect(result.getDate()).toBe(1);
 	});
 	
 	it('handles strings formatted like yyyy-mm or mmmm yyyy', function() {
-		var date = '2011-04', result = LAMPO.UTIL.strToDate(date);
+		var date = '2011-04', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
-		date = 'April 2011', result = LAMPO.UTIL.strToDate(date);
+		date = 'April 2011', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 	});
 	
 	it('handles strings formatted like d mmm yyyy', function() {
-		var date = '1 Apr 2011', result = LAMPO.UTIL.strToDate(date);
+		var date = '1 Apr 2011', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 		expect(result.getDate()).toBe(1);
 	});
 	
 	it('handles strings formatted like ddmmmmyyyy', function() {
-		var date = '01April2011', result = LAMPO.UTIL.strToDate(date);
+		var date = '01April2011', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 		expect(result.getDate()).toBe(1);
 	});
 	
 	it('handles strings formatted like dd-mmm-yyyy', function() {
-		var date = '01-Apr-2011', result = LAMPO.UTIL.strToDate(date);
+		var date = '01-Apr-2011', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 		expect(result.getDate()).toBe(1);
 	});
 	
 	it('handles internationalized strings with the appropriate extensions', function() {
-		var date = '01 Abril 2011', result = LAMPO.UTIL.strToDate(date);
+		var date = '01 Abril 2011', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 		expect(result.getDate()).toBe(1);
 	});
 	
 	it('handles a string with extra information like weekday or time', function() {
-		var date = 'Fri, 01 Apr 2011 08:30 AM', result = LAMPO.UTIL.strToDate(date);
+		var date = 'Fri, 01 Apr 2011 08:30 AM', result = JSUTIL.strToDate(date);
 		expect(result.getFullYear()).toBe(2011);
 		expect(result.getMonth()).toBe(3);
 		expect(result.getDate()).toBe(1);
 	});
 	
 	it('returns null if it doesn\'t understand the string', function() {
-		var date = 'jellyfish', result = LAMPO.UTIL.strToDate(date);
+		var date = 'jellyfish', result = JSUTIL.strToDate(date);
 		expect(result).toBe(null);
 	});
 	
@@ -236,81 +236,81 @@ describe('Number.format', function() {
 	var num = 123456789.097531;
 	
 	it('signs a positive number with "+" when "+" is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num, '+');
+		var formatted = JSUTIL.numberFormat(num, '+');
 		expect(formatted[0]).toBe('+');
 	});
 	
 	it('signs a negative number with "-" when "+" is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num*-1, '+');
+		var formatted = JSUTIL.numberFormat(num*-1, '+');
 		expect(formatted[0]).toBe('-');
 	});
 	
 	it('adds space before a positive number when "-" is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num, '-');
+		var formatted = JSUTIL.numberFormat(num, '-');
 		expect(formatted[0]).toBe(' ');
 	});
 	
 	it('signs a negative number with "-" when "-" is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num*-1, '-');
+		var formatted = JSUTIL.numberFormat(num*-1, '-');
 		expect(formatted[0]).toBe('-');
 	});
 	
 	it('adds space before and after a positive number when "(" and optionally ")" is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num, '(');
+		var formatted = JSUTIL.numberFormat(num, '(');
 		expect(formatted[0]).toBe(' ');
 		expect(formatted[formatted.length-1]).toBe(' ');
 		expect(formatted.indexOf('-')).toEqual(-1);
 	});
 	
 	it('signs a negative number with "()" when "(" and optionally ")" is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num*-1, '()');
+		var formatted = JSUTIL.numberFormat(num*-1, '()');
 		expect(formatted[0]).toBe('(');
 		expect(formatted[formatted.length-1]).toBe(')');
 	});
 	
 	it('adds "$" before a number when "$" is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num, '$');
+		var formatted = JSUTIL.numberFormat(num, '$');
 		expect(formatted[0]).toBe('$');
 	});
 	
 	it('adds commas as a thousands separator when "," is specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num, ',');
+		var formatted = JSUTIL.numberFormat(num, ',');
 		expect(formatted.indexOf(',')).toBeGreaterThan(0);
 		expect(formatted.length).toEqual(18);
 	});
 	
 	it('trims off decimals when "." is specified without any zeroes', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num, '.');
+		var formatted = JSUTIL.numberFormat(num, '.');
 		expect(formatted.length).toEqual(9);
 	});
 	
 	it('fixes the number of decimal places when "." is specified followed by one or more zeroes', function() {
-		var formatted_with_less = LAMPO.UTIL.numberFormat(num, '.00');
+		var formatted_with_less = JSUTIL.numberFormat(num, '.00');
 		expect(formatted_with_less.length).toEqual(12);
-		var formatted_with_more = LAMPO.UTIL.numberFormat(num, '.00000000');
+		var formatted_with_more = JSUTIL.numberFormat(num, '.00000000');
 		expect(formatted_with_more.length).toEqual(18);
 	});
 	
 	it('applies more than one formatting rule if multiple rules are specified in the mask', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num, '-$,.00');
+		var formatted = JSUTIL.numberFormat(num, '-$,.00');
 		expect(formatted.length).toEqual(16);
 	});
 	
 	it('adds commas as a thousands separator by default if no mask is specified', function() {
-		var formatted = LAMPO.UTIL.numberFormat(num);
+		var formatted = JSUTIL.numberFormat(num);
 		expect(formatted.indexOf(',')).toBeGreaterThan(0);
 		expect(formatted.length).toEqual(18);
 	});
 	
 	it('throws an error when not given a mask in the correct format', function() {
 		expect(function() {
-			LAMPO.UTIL.numberFormat(num, 'jellyfish');
+			JSUTIL.numberFormat(num, 'jellyfish');
 		}).toThrow('Illegal character(s) or improperly formatted mask');
 	});
 	
 	it('throws an error when passed NaN', function() {
 		expect(function() {
-			LAMPO.UTIL.numberFormat(NaN, ',.00');
+			JSUTIL.numberFormat(NaN, ',.00');
 		}).toThrow('Non-numeric input');
 	});
 	
@@ -470,18 +470,18 @@ describe('RegExp.escape', function() {
 	var chars = new String("-[\]{}()*+?.,\\^$|#");
 	
 	it('escapes characters which have a special meaning in a RegExp', function() {
-		var escaped = LAMPO.UTIL.regExpEscape(chars)
+		var escaped = JSUTIL.regExpEscape(chars)
 			, result = new RegExp(escaped).test(chars);
 		expect(result).toBe(true);
 	});
 	
 	it('converts numbers into strings', function() {
-		var escaped = LAMPO.UTIL.regExpEscape(1234567890);
+		var escaped = JSUTIL.regExpEscape(1234567890);
 		expect(escaped).toEqual("1234567890");
 	});
 	
 	it('returns an empty string if no arguments are supplied', function() {
-		var escaped = LAMPO.UTIL.regExpEscape();
+		var escaped = JSUTIL.regExpEscape();
 		expect(escaped).toBe('');
 	});
 	
@@ -495,12 +495,12 @@ describe('RegExp.escape', function() {
 	
 });
 
-describe('LAMPO.UTIL', function() {
+describe('JSUTIL', function() {
 	
 	describe('getUrlVal', function() {
 		
 		it('should return bar when passed foo (if set)', function() {
-			var val = LAMPO.UTIL.getUrlVal('foo');
+			var val = JSUTIL.getUrlVal('foo');
 			if (window.location.href && window.location.href.indexOf('foo=') >= 0)
 				expect(val).toEqual('bar');
 			else
@@ -508,7 +508,7 @@ describe('LAMPO.UTIL', function() {
 		});
 		
 		it('should return an empty string if the value does not exist', function() {
-			var val = LAMPO.UTIL.getUrlVal('jellyfish');
+			var val = JSUTIL.getUrlVal('jellyfish');
 			if (window.location.href && window.location.href.indexOf('jellyfish') < 0)
 				expect(val).toEqual('');
 		});
