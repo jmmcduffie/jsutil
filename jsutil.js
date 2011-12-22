@@ -1,47 +1,198 @@
-﻿var JSUTIL = JSUTIL || {};
-
-/**
- * Retrieves a value from the query string based on the specified key
+﻿/**
  * @author Jeremy McDuffie (http://jmmcduffie.com)
- * @version 1.0
- * @param {String} n the key of the value to retrieve
- * @return {String} the value of the passed-in key or an empty string
  */
-JSUTIL.getUrlVal=function(n){n=n.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");var r=new RegExp("[\\?&]"+n+"=([^&#]*)");var v=r.exec(window.location.href);if(v==null)return"";else return v[1];}
-
-/**
- * Pads a string to the specified length by the specified character or "0" by default
- * @author Jeremy McDuffie (http://jmmcduffie.com)
- * @version 1.1
- * @param {String} string If called as a static method, the string to pad or object to be converted to a string and padded
- * @param {Number} len The desired length
- * @param {String} ch The character with which to pad or "0" by default
- * @param {String} right If true the padding will be done on the right side of the string
- * @return {String} The newly padded string
- */
-
-JSUTIL.pad = function(str, len, ch, right) {
+var JSUTIL = JSUTIL || (function(EXTEND_NATIVE_OBJECTS) {
 	
-	var str = str.toString()
-		, len = parseInt(len,10) || 2
-		, ch = ch || 0;
+	/**
+	 * Retrieves a value from the query string based on the specified key
+	 * @author Jeremy McDuffie (http://jmmcduffie.com)
+	 * @version 1.0
+	 * @param {String} key the key of the value to retrieve
+	 * @return {String} the value of the passed-in key or an empty string
+	 */
+	var getUrlVal = function getUrlVal(key)
+	{
+		var key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]")
+			, pattern = new RegExp("[\\?&]"+key+"=([^&#]*)")
+			, matches = pattern.exec(window.location.href);
+		if (matches === null) return "";
+		else return v[1];
+	};
 	
-	if (!str) throw SyntaxError('Invalid string');
-	if (!len) throw SyntaxError('Length must be a valid number');
-	
-	while (str.length < len) {
-		if (right) str += ch;
-		else str = ch + str;
-		// Trim the string if it's too long
-		if (str.length > len) {
-			if (right) str = str.slice(0, len);
-			else str = str.slice(str.length - len);
+	/**
+	 * Pads a string to the specified length by the specified character or "0" by default
+	 * @version 1.1
+	 * @param {String} string If called as a static method, the string to pad or object to be converted to a string and padded
+	 * @param {Number} len The desired length
+	 * @param {String} ch The character with which to pad or "0" by default
+	 * @param {String} right If true the padding will be done on the right side of the string
+	 * @return {String} The newly padded string
+	 */
+	var pad = function pad(str, len, ch, right)
+	{
+		var str = str.toString()
+			, len = parseInt(len,10) || 2
+			, ch = ch || 0;
+		if (!str) throw SyntaxError('Invalid string');
+		if (!len) throw SyntaxError('Length must be a valid number');
+		while (str.length < len) {
+			if (right) str += ch;
+			else str = ch + str;
+			// Trim the string if it's too long
+			if (str.length > len) {
+				if (right) str = str.slice(0, len);
+				else str = str.slice(str.length - len);
+			}
 		}
+		return str;
+	};
+	
+	/**
+	 * Counts the number of occurrences of one string in another
+	 * @version 1.0
+	 * @param {Object} str The source string (or object than can be converted to a string)
+	 * @param {String} chs The character(s) to search for in the string
+	 * @return {Number} The count
+	 */
+	var stringCount = function stringCount(str, chs)
+	{
+		if (str == undefined || chs == undefined) throw new SyntaxError('Required parameters are missing');
+		str = str.toString(); chs = chs.toString();
+		if (chs.length === 0) return 0;
+		return parseInt((str.length - str.replace(new RegExp(regExpEscape(chs),"g"), '').length) / chs.length, 10);
+	};
+	
+	/**
+	 * Formats a number using the provided mask
+	 * @author Jeremy McDuffie (http://jmmcduffie.com)
+	 * @version 1.1
+	 * @param {Number} num The number to be formatted
+	 * @param {Object} mask The criteria for formatting the number.
+	 * @return {String} The newly formatted number
+	 */
+	numberFormat = function numberFormat(num, mask) {
+		var format = /^(\+|\-|\()?(\$)?(\,)?(\.0*)?\)?$/
+			, comma_pattern = /(\d+)(\d{3})/;
+		return function(num, mask){
+			// only accepts numbers
+			if (Number(num).toString() != num.toString() || isNaN(num)) throw new SyntaxError('Non-numeric input');
+			// mask must match the RegExp pattern
+			var mask = (mask != undefined) ? mask : ','
+				, matches = format.exec(mask);
+			if (!matches) throw new SyntaxError('Illegal character(s) or improperly formatted mask');
+			// set up the different formatting rules
+			var s = num.toString().replace('-','')
+				, signed = matches[1] || false
+				, currency = matches[2] || false
+				, commas = matches[3] || false
+				, fixed = matches[4] || false;
+			// Handle decimal place setting
+			if (fixed) s = num.toFixed(JSUTIL.stringCount(fixed, '0'));
+			// Handle comma separation
+			if (commas) {
+				var pieces = s.split('.');
+				while (comma_pattern.test(pieces[0])) pieces[0] = pieces[0].replace(comma_pattern, "$1,$2");
+				s = pieces.join('.');
+			}
+			// Handle currency
+			if (currency) s = (num < 0) ? '-$' + s.replace('-','') : '$' + s;
+			// Handle signed numbers
+			if (signed) s = s.replace('-','');
+			if (signed == '+') s = (num > 0) ? '+' + s : (num < 0) ? '-' + s : ' ' + s;
+			else if (signed == '-') s = (num >= 0) ? ' ' + s : '-' + s;
+			else if (signed == '(') s = (num >= 0) ? ' ' + s + ' ' : '(' + s + ')';
+			return s;
+		};
+	}();
+	
+	/**
+	 * Changes the specified part of a date by the specified increment
+	 * @version 1.1
+	 * @param {Date} date If called as a static method, the object on which to perform the change
+	 * @param {String} part The part of the date to change as a member of the set (y|m|d|h|n|s|l|w) with n=minute and l=millisecond
+	 * @param {Number} num The increment by which to change the date as an integer value
+	 * @return {Date} If called as a static method, a copy of the supplied date with the changes applied. If called on an instance, that instance with the changes applied.
+	 */
+	var dateAdd = function dateAdd(date, part, num) {
+		if (arguments.length == 2 && !(date instanceof Date))
+			var num = part, part = date, date = new Date();
+		num = parseInt(num, 10);
+		if(!(date instanceof Date) || date.toString() == 'Invalid Date') throw SyntaxError('Invalid date');
+		if(!/^(y|m|d|h|n|s|l|w)$/.test(part)) throw SyntaxError('Invalid datepart');
+		if(!num) throw SyntaxError('Invalid number');
+		if (this instanceof Date) date = this;
+		else date = new Date(date.getTime());
+		switch (part) {
+			case 'y': date.setFullYear(date.getFullYear() + num);         break;
+			case 'm': date.setMonth(date.getMonth() + num);               break;
+			case 'd': date.setDate(date.getDate() + num);                 break;
+			case 'h': date.setHours(date.getHours() + num);               break;
+			case 'n': date.setMinutes(date.getMinutes() + num);           break;
+			case 's': date.setSeconds(date.getSeconds() + num);           break;
+			case 'l': date.setMilliseconds(date.getMilliseconds() + num); break;
+			case 'w': date.setDate(date.getDate() + num * 7);             break;
+		}
+		return date;
+	};
+	
+	/**
+	 * Iterates over an array and executes a callback function
+	 * @version 1.0
+	 * @param {Array} array The array over which to iterate
+	 * @param {Function} callback The function to call with each item in the array
+	 * @return {Array} The original array
+	 */
+	var each = function each(array, callback)
+	{
+		for (var i = 0, l = array.length; i < l; i++) {
+			callback.call(array, array[i], i);
+		}
+		return array;
 	}
 	
-	return str;
+	/**
+	 * Iterates over an array and returns a new array by executing the passed function on each item
+	 * @version 1.0
+	 * @param {Array} array The array over which to iterate
+	 * @param {Function} callback The function to execute on each item
+	 * @return {Array} A new array with the results
+	 */
+	var arrayMap = function arrayMap(array, callback)
+	{
+		var result = [];
+		for (var i = 0, l = array.length; i < l; i++) {
+			result.push(callback.call(array, array[i], i));
+		}
+		return result;
+	}
 	
-};
+	/**
+	 * Escapes any characters that have a special meaning in regular expressions
+	 * @version 1.0
+	 * @param {String} text The text to be sanitized
+	 * @return {String} The newly sanitized text
+	 */
+	var regExpEscape = function regExpEscape(text) {
+		return String(text||'').replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
+	}
+	
+	// Extend native objects
+	if (EXTEND_NATIVE_OBJECTS) {
+		String.pad=pad;String.prototype.pad=function(l,c,d){return pad(this,l,c,d)};
+		String.count=stringCount;String.prototype.count=function(c){return stringCount(this,c)};
+		Number.format=numberFormat;Number.prototype.format=function(m){return numberFormat(this,m)};
+		Date.add=Date.prototype.add=dateAdd;
+		Array.each=each;Array.prototype.each=function(c){return each(this,c)};
+		Array.map=arrayMap;Array.prototype.map=function(c){return arrayMap(this,c)};
+		RegExp.escape=regExpEscape;
+	}
+	
+	// Attach each function to the return object
+	var functions = ['getUrlVal', 'pad', 'stringCount', 'numberFormat', 'dateAdd', 'each', 'arrayMap', 'regExpEscape'], _jsutil = {};
+	each(functions, function(item) { _jsutil[item] = eval(item); });
+	return _jsutil;
+	
+})(true);
 
 /**
  * Converts a string into a Date object
@@ -94,110 +245,6 @@ JSUTIL.strToDate.i18n = {
 		'enero': 0, 'febrero': 1, 'marzo': 2, 'abril': 3, 'mayo': 4, 'junio': 5, 'julio': 6, 'agosto': 7, 'septiembre': 8, 'octubre': 9, 'noviembre': 10, 'diciembre': 12
 		, 'feb': 1, 'abr': 3, 'jun': 5, 'jul': 6, 'set': 8, 'oct': 9, 'nov': 10, 'dic': 11
 	}
-};
-
-/**
- * Counts the number of occurrences of one string in another
- * @author Jeremy McDuffie (http://jmmcduffie.com)
- * @version 1.0
- * @param {Object} str The source string (or object than can be converted to a string)
- * @param {String} chs The character(s) to search for in the string
- * @return {Number} The count
- */
-JSUTIL.stringCount = function(str, chs) {
-	if (str == undefined || chs == undefined) throw new SyntaxError('Required parameters are missing');
-	str = str.toString(); chs = chs.toString();
-	if (chs.length === 0) return 0;
-    return parseInt((str.length - str.replace(new RegExp(JSUTIL.regExpEscape(chs),"g"), '').length) / chs.length, 10);
-};
-
-/**
- * Formats a number using the provided mask
- * @author Jeremy McDuffie (http://jmmcduffie.com)
- * @version 1.1
- * @param {Number} num The number to be formatted
- * @param {Object} mask The criteria for formatting the number.
- * @return {String} The newly formatted number
- */
-JSUTIL.numberFormat = function(num, mask) {
-	
-	var format = /^(\+|\-|\()?(\$)?(\,)?(\.0*)?\)?$/
-		, comma_pattern = /(\d+)(\d{3})/;
-	
-	return function(num, mask){
-		
-		// only accepts numbers
-		if (Number(num).toString() != num.toString() || isNaN(num)) throw new SyntaxError('Non-numeric input');
-		
-		// mask must match the RegExp pattern
-		var mask = (mask != undefined) ? mask : ','
-			, matches = format.exec(mask);
-		if (!matches) throw new SyntaxError('Illegal character(s) or improperly formatted mask');
-		
-		// set up the different formatting rules
-		var s = num.toString().replace('-','')
-			, signed = matches[1] || false
-			, currency = matches[2] || false
-			, commas = matches[3] || false
-			, fixed = matches[4] || false
-		
-		// Handle decimal place setting
-		if (fixed) s = num.toFixed(JSUTIL.stringCount(fixed, '0'));
-		
-		// Handle comma separation
-		if (commas) {
-			var pieces = s.split('.');
-			while (comma_pattern.test(pieces[0])) pieces[0] = pieces[0].replace(comma_pattern, "$1,$2");
-			s = pieces.join('.');
-		}
-		
-		// Handle currency
-		if (currency) s = (num < 0) ? '-$' + s.replace('-','') : '$' + s;
-		
-		// Handle signed numbers
-		if (signed) s = s.replace('-','');
-		if (signed == '+') s = (num > 0) ? '+' + s : (num < 0) ? '-' + s : ' ' + s;
-		else if (signed == '-') s = (num >= 0) ? ' ' + s : '-' + s;
-		else if (signed == '(') s = (num >= 0) ? ' ' + s + ' ' : '(' + s + ')';
-		
-		return s;
-	};
-}();
-
-/**
- * Changes the specified part of a date by the specified increment
- * @author Jeremy McDuffie (http://jmmcduffie.com)
- * @version 1.1
- * @param {Date} date If called as a static method, the object on which to perform the change
- * @param {String} part The part of the date to change as a member of the set (y|m|d|h|n|s|l|w) with n=minute and l=millisecond
- * @param {Number} num The increment by which to change the date as an integer value
- * @return {Date} If called as a static method, a copy of the supplied date with the changes applied. If called on an instance, that instance with the changes applied.
- */
-JSUTIL.dateAdd = function(date, part, num) {
-	
-	if (arguments.length == 2 && !(date instanceof Date))
-		var num = part, part = date, date = new Date();
-	
-	num = parseInt(num, 10);
-	if(!(date instanceof Date) || date.toString() == 'Invalid Date') throw SyntaxError('Invalid date');
-	if(!/^(y|m|d|h|n|s|l|w)$/.test(part)) throw SyntaxError('Invalid datepart');
-	if(!num) throw SyntaxError('Invalid number');
-		
-	if (this instanceof Date) date = this;
-	else date = new Date(date.getTime());
-	
-	switch (part) {
-		case 'y': date.setFullYear(date.getFullYear() + num);         break;
-		case 'm': date.setMonth(date.getMonth() + num);               break;
-		case 'd': date.setDate(date.getDate() + num);                 break;
-		case 'h': date.setHours(date.getHours() + num);               break;
-		case 'n': date.setMinutes(date.getMinutes() + num);           break;
-		case 's': date.setSeconds(date.getSeconds() + num);           break;
-		case 'l': date.setMilliseconds(date.getMilliseconds() + num); break;
-		case 'w': date.setDate(date.getDate() + num * 7);             break;
-	}
-	
-	return date;
 };
 
 /**
@@ -317,32 +364,9 @@ JSUTIL.dateFormat.i18n = {
 	]
 };
 
-/**
- * Escapes any characters that have a special meaning in regular expressions
- * @author Jeremy McDuffie (http://jmmcduffie.com)
- * @version 1.0
- * @param {String} text The text to be sanitized
- * @return {String} The newly sanitized text
- */
-JSUTIL.regExpEscape = function(text) {
-    return String(text||'').replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
-}
-
 /*
  * Extend Native Objects
  */
 
-// STRING
-String.pad=JSUTIL.pad;String.prototype.pad=function(l,c,d){return JSUTIL.pad(this,l,c,d)};
-String.count=JSUTIL.stringCount;String.prototype.count=function(c){return JSUTIL.stringCount(this,c)};
 String.toDate=JSUTIL.strToDate;String.prototype.toDate=function(){return JSUTIL.strToDate(this)};
-
-// NUMBER
-Number.format=JSUTIL.numberFormat;Number.prototype.format=function(m){return JSUTIL.numberFormat(this,m)};
-
-// DATE
-Date.add=Date.prototype.add=JSUTIL.dateAdd;
 Date.format=JSUTIL.dateFormat;Date.prototype.format=function(m,u){return Date.format(this,m,u)};
-
-// REGEXP
-RegExp.escape=JSUTIL.regExpEscape;
