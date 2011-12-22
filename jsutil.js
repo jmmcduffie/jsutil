@@ -1,8 +1,4 @@
-﻿/*
- * Import the UTIL package into the JMM object
- */
-var JMM = JMM || {};
-JMM.UTIL = JMM.UTIL || {};
+﻿var JSUTIL = JSUTIL || {};
 
 /**
  * Retrieves a value from the query string based on the specified key
@@ -11,7 +7,7 @@ JMM.UTIL = JMM.UTIL || {};
  * @param {String} n the key of the value to retrieve
  * @return {String} the value of the passed-in key or an empty string
  */
-JMM.UTIL.getUrlVal=function(n){n=n.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");var r=new RegExp("[\\?&]"+n+"=([^&#]*)");var v=r.exec(window.location.href);if(v==null)return"";else return v[1];}
+JSUTIL.getUrlVal=function(n){n=n.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");var r=new RegExp("[\\?&]"+n+"=([^&#]*)");var v=r.exec(window.location.href);if(v==null)return"";else return v[1];}
 
 /**
  * Pads a string to the specified length by the specified character or "0" by default
@@ -24,7 +20,7 @@ JMM.UTIL.getUrlVal=function(n){n=n.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]")
  * @return {String} The newly padded string
  */
 
-JMM.UTIL.pad = function(str, len, ch, right) {
+JSUTIL.pad = function(str, len, ch, right) {
 	
 	var str = str.toString()
 		, len = parseInt(len,10) || 2
@@ -54,10 +50,10 @@ JMM.UTIL.pad = function(str, len, ch, right) {
  * @param {String} str The string to be converted into a date
  * @return {Object} A date object created from the specified string
  */
-JMM.UTIL.strToDate = function() {
+JSUTIL.strToDate = function() {
 	// Hand back the conversion function
 	return function(str) {
-		var self = JMM.UTIL.strToDate;
+		var self = JSUTIL.strToDate;
 		for (var p in self.patterns) {
 			if (matches = self.patterns[p].matcher.exec(str)) return self.patterns[p].handler(matches, self);
 		}
@@ -66,7 +62,7 @@ JMM.UTIL.strToDate = function() {
 	
 }();
 
-JMM.UTIL.strToDate.patterns = {
+JSUTIL.strToDate.patterns = {
 	numeric_standard: {
 		matcher: /(\d{4})[-\/\.](\d{1,2})(?:[-\/\.](\d{1,2}))?/
 		, handler: function(matches) { return new Date(matches[1], matches[2] - 1 || 0, matches[3] || 1); }
@@ -76,11 +72,11 @@ JMM.UTIL.strToDate.patterns = {
 		, handler: function(matches) { return new Date(matches[3], matches[1] - 1, matches[2]); }
 	}
 	, textual_en_standard: {
-		matcher: /(?:(\d{1,2})[- ])?(January|Febraury|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[- ]?(\d{4})/i
+		matcher: /(?:(\d{1,2})[- ])?(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[- ]?(\d{4})/i
 		, handler: function(matches, self) { return new Date(matches[3], self.i18n.months[matches[2].toLowerCase()], matches[1] || 1); }
 	}
 	, textual_en_american: {
-		matcher: /(January|Febraury|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec) (\d{1,2}) (\d{4})/i
+		matcher: /(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec) (\d{1,2}) (\d{4})/i
 		, handler: function(matches, self) { return new Date(matches[3], self.i18n.months[matches[1].toLowerCase()], matches[2]); }
 	}
 	, textual_es: {
@@ -89,7 +85,7 @@ JMM.UTIL.strToDate.patterns = {
 	}
 };
 
-JMM.UTIL.strToDate.i18n = {
+JSUTIL.strToDate.i18n = {
 	months: {
 		'january': 0, 'february': 1, 'march': 2, 'april': 3, 'may': 4, 'june': 5, 'july': 6, 'august': 7, 'september': 8, 'october': 9, 'november': 10, 'december': 11
 		, 'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'jun': 5, 'jul': 6, 'aug': 7, 'sep': 8, 'sept': 8, 'oct': 9, 'nov': 10, 'dec': 11
@@ -108,11 +104,11 @@ JMM.UTIL.strToDate.i18n = {
  * @param {String} chs The character(s) to search for in the string
  * @return {Number} The count
  */
-JMM.UTIL.stringCount = function(str, chs) {
+JSUTIL.stringCount = function(str, chs) {
 	if (str == undefined || chs == undefined) throw new SyntaxError('Required parameters are missing');
 	str = str.toString(); chs = chs.toString();
 	if (chs.length === 0) return 0;
-    return parseInt((str.length - str.replace(new RegExp(JMM.UTIL.regExpEscape(chs),"g"), '').length) / chs.length, 10);
+    return parseInt((str.length - str.replace(new RegExp(JSUTIL.regExpEscape(chs),"g"), '').length) / chs.length, 10);
 };
 
 /**
@@ -123,7 +119,7 @@ JMM.UTIL.stringCount = function(str, chs) {
  * @param {Object} mask The criteria for formatting the number.
  * @return {String} The newly formatted number
  */
-JMM.UTIL.numberFormat = function(num, mask) {
+JSUTIL.numberFormat = function(num, mask) {
 	
 	var format = /^(\+|\-|\()?(\$)?(\,)?(\.0*)?\)?$/
 		, comma_pattern = /(\d+)(\d{3})/;
@@ -146,7 +142,7 @@ JMM.UTIL.numberFormat = function(num, mask) {
 			, fixed = matches[4] || false
 		
 		// Handle decimal place setting
-		if (fixed) s = num.toFixed(JMM.UTIL.stringCount(fixed, '0'));
+		if (fixed) s = num.toFixed(JSUTIL.stringCount(fixed, '0'));
 		
 		// Handle comma separation
 		if (commas) {
@@ -177,7 +173,7 @@ JMM.UTIL.numberFormat = function(num, mask) {
  * @param {Number} num The increment by which to change the date as an integer value
  * @return {Date} If called as a static method, a copy of the supplied date with the changes applied. If called on an instance, that instance with the changes applied.
  */
-JMM.UTIL.dateAdd = function(date, part, num) {
+JSUTIL.dateAdd = function(date, part, num) {
 	
 	if (arguments.length == 2 && !(date instanceof Date))
 		var num = part, part = date, date = new Date();
@@ -214,7 +210,7 @@ JMM.UTIL.dateAdd = function(date, part, num) {
  * @param {Boolean} utc Whether to use UTC dates or not, defaulting to false
  * @return {String} A formatted version of the given date
  */
-JMM.UTIL.dateFormat = function () {
+JSUTIL.dateFormat = function () {
 	var	token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
 		timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
 		timezoneClip = /[^-+\dA-Z]/g,
@@ -227,7 +223,7 @@ JMM.UTIL.dateFormat = function () {
 
 	// Regexes and supporting functions are cached through closure
 	return function (date, mask, utc) {
-		var dF = JMM.UTIL.dateFormat;
+		var dF = JSUTIL.dateFormat;
 
 		// You can't provide utc if you skip other args (use the "UTC:" mask prefix)
 		if (arguments.length == 1 && Object.prototype.toString.call(date) == "[object String]" && !/\d/.test(date)) {
@@ -294,7 +290,7 @@ JMM.UTIL.dateFormat = function () {
 }();
 
 // Some common format strings
-JMM.UTIL.dateFormat.masks = {
+JSUTIL.dateFormat.masks = {
 	"default":      "ddd mmm dd yyyy HH:MM:ss",
 	shortDate:      "m/d/yy",
 	mediumDate:     "mmm d, yyyy",
@@ -310,7 +306,7 @@ JMM.UTIL.dateFormat.masks = {
 };
 
 // Internationalization strings
-JMM.UTIL.dateFormat.i18n = {
+JSUTIL.dateFormat.i18n = {
 	dayNames: [
 		"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
 		"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
@@ -328,7 +324,7 @@ JMM.UTIL.dateFormat.i18n = {
  * @param {String} text The text to be sanitized
  * @return {String} The newly sanitized text
  */
-JMM.UTIL.regExpEscape = function(text) {
+JSUTIL.regExpEscape = function(text) {
     return String(text||'').replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 }
 
@@ -337,16 +333,16 @@ JMM.UTIL.regExpEscape = function(text) {
  */
 
 // STRING
-String.pad=JMM.UTIL.pad;String.prototype.pad=function(l,c,d){return JMM.UTIL.pad(this,l,c,d)};
-String.count=JMM.UTIL.stringCount;String.prototype.count=function(c){return JMM.UTIL.stringCount(this,c)};
-String.toDate=JMM.UTIL.strToDate;String.prototype.toDate=function(){return JMM.UTIL.strToDate(this)};
+String.pad=JSUTIL.pad;String.prototype.pad=function(l,c,d){return JSUTIL.pad(this,l,c,d)};
+String.count=JSUTIL.stringCount;String.prototype.count=function(c){return JSUTIL.stringCount(this,c)};
+String.toDate=JSUTIL.strToDate;String.prototype.toDate=function(){return JSUTIL.strToDate(this)};
 
 // NUMBER
-Number.format=JMM.UTIL.numberFormat;Number.prototype.format=function(m){return JMM.UTIL.numberFormat(this,m)};
+Number.format=JSUTIL.numberFormat;Number.prototype.format=function(m){return JSUTIL.numberFormat(this,m)};
 
 // DATE
-Date.add=Date.prototype.add=JMM.UTIL.dateAdd;
-Date.format=JMM.UTIL.dateFormat;Date.prototype.format=function(m,u){return Date.format(this,m,u)};
+Date.add=Date.prototype.add=JSUTIL.dateAdd;
+Date.format=JSUTIL.dateFormat;Date.prototype.format=function(m,u){return Date.format(this,m,u)};
 
 // REGEXP
-RegExp.escape=JMM.UTIL.regExpEscape;
+RegExp.escape=JSUTIL.regExpEscape;
