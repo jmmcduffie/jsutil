@@ -465,6 +465,109 @@ describe('Date.add', function() {
 	
 });
 
+describe('Array.each', function() {
+	
+	var array, callback;
+	
+	beforeEach(function() {
+		array = [1, "two", 3, "fore", 5];
+		callback = jasmine.createSpy();
+	});
+	
+	it('calls the callback function if the array is not empty', function() {
+		JSUTIL.each([], callback);
+		expect(callback).not.toHaveBeenCalled();
+		JSUTIL.each(array, callback);
+		expect(callback).toHaveBeenCalled();
+	});
+	
+	it('calls the callback function once for each item in the array', function() {
+		JSUTIL.each(array, callback);
+		expect(callback.callCount).toEqual(5);
+	});
+	
+	it('calls the callback function with the current item and the current index', function() {
+		JSUTIL.each(array, callback);
+		expect(callback).toHaveBeenCalledWith(1, 0);
+		expect(callback).toHaveBeenCalledWith("two", 1);
+		expect(callback).toHaveBeenCalledWith(3, 2);
+		expect(callback).toHaveBeenCalledWith("fore", 3);
+		expect(callback).toHaveBeenCalledWith(5, 4);
+	});
+	
+	describe('when called as an instance method', function() {
+		
+		it('correctly calls the callback', function() {
+			array.each(callback);
+			expect(callback).toHaveBeenCalled();
+		});
+		
+		it('does not alter the array', function() {
+			array.each(callback);
+			expect(array).toEqual([1, "two", 3, "fore", 5]);
+		});
+		
+	});
+	
+});
+
+describe('Array.map', function() {
+	
+	var array, call, newArray;
+	
+	beforeEach(function() {
+		array = [1, 2, 3, 4, 5];
+		call = { back: function(item, index) { return item + 2; } };
+		spyOn(call, 'back').andCallThrough();
+	});
+	
+	it('calls the callback function if the array is not empty', function() {
+		JSUTIL.arrayMap([], call.back);
+		expect(call.back).not.toHaveBeenCalled();
+		JSUTIL.arrayMap(array, call.back);
+		expect(call.back).toHaveBeenCalled();
+	});
+	
+	it('calls the callback function once for each item in the array', function() {
+		JSUTIL.arrayMap(array, call.back);
+		expect(call.back.callCount).toEqual(5);
+	});
+	
+	it('calls the callback function with the current item and the current index', function() {
+		JSUTIL.arrayMap(array, call.back);
+		expect(call.back).toHaveBeenCalledWith(1, 0);
+		expect(call.back).toHaveBeenCalledWith(2, 1);
+		expect(call.back).toHaveBeenCalledWith(3, 2);
+		expect(call.back).toHaveBeenCalledWith(4, 3);
+		expect(call.back).toHaveBeenCalledWith(5, 4);
+	});
+	
+	it('returns a new array with the result of the map', function() {
+		newArray = JSUTIL.arrayMap(array, call.back);
+		expect(newArray).toEqual([3, 4, 5, 6, 7]);
+	});
+	
+	describe('when called as an instance method', function() {
+		
+		it('correctly calls the callback', function() {
+			array.map(call.back);
+			expect(call.back).toHaveBeenCalled();
+		});
+		
+		it('correctly returns the new array', function() {
+			newArray = array.map(call.back);
+			expect(newArray).toEqual([3, 4, 5, 6, 7]);
+		});
+			
+		it('does not alter the array', function() {
+			array.map(call.back);
+			expect(array).toEqual([1, 2, 3, 4, 5]);
+		});
+		
+	});
+	
+});
+
 describe('RegExp.escape', function() {
 	
 	var chars = new String("-[\]{}()*+?.,\\^$|#");
