@@ -17,7 +17,7 @@ You can, of course, alias the functions to whatever name you would like (e.g. `f
 Unit Tests
 ----------
 
-Using [JasmineBDD](http://pivotal.github.com/jasmine/) I have built unit tests for this library. All tests can be found under the `spec/` directory.
+Using [JasmineBDD](https://jasmine.github.io/) I have built unit tests for this library. All tests can be found under the `spec/` directory.
 
 i18n
 ----
